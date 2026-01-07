@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ZXing 扫描框颜色配置 -->
+    <color name="zxing_custom_possible_result_points">#c0ffbd</color>
+    <color name="zxing_custom_result_view">#b0000000</color>
+    <color name="zxing_custom_viewfinder_laser">#ff0000</color>
+    <color name="zxing_custom_viewfinder_mask">#60000000</color>
+</resources>
+
+

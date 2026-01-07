@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".RecognizeActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="书本识别"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="等待相机权限..."
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tv_recognize_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="识别信息: 无"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        android:background="#F0F0F0" />
+
+    <TextView
+        android:id="@+id/tv_download_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下载状态: 无"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        android:background="#F0F0F0" />
+
+    <TextView
+        android:id="@+id/tv_play_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="播放状态: 无"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp"
+        android:padding="8dp"
+        android:background="#F0F0F0" />
+
+    <!-- 使用方自己实现的SurfaceView，用于相机预览 -->
+    <SurfaceView
+        android:id="@+id/surface_view"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginBottom="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="8dp">
+
+        <Button
+            android:id="@+id/btn_start_recognize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始识别"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp"
+            android:enabled="true"/>
+
+        <Button
+            android:id="@+id/btn_stop_recognize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="停止识别"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:enabled="false"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btn_pause_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="暂停播放"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp"
+            android:enabled="false"/>
+
+        <Button
+            android:id="@+id/btn_resume_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="恢复播放"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp"
+            android:enabled="false"/>
+
+        <Button
+            android:id="@+id/btn_replay_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="重新播放"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:enabled="false"/>
+    </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

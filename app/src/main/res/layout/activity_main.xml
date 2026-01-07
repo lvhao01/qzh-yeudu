@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tv_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="授权状态: 未授权"
+        android:textSize="18sp"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btn_scan_qrcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="扫描二维码授权"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btn_start_auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="手动输入授权码"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btn_start_recognize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始识别"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:enabled="false" />
+
+    <Button
+        android:id="@+id/btn_clear_auth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="清除认证"
+        android:textSize="14sp"
+        android:padding="12dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+</LinearLayout>
+
+
