@@ -16,6 +16,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()  // 添加本地Maven仓库，用于存放4个AAR依赖
     }
 }
 

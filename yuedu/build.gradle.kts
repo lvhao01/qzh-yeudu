@@ -40,12 +40,22 @@ android {
     }
 }
 
+// 注意：repositories 应该在 settings.gradle.kts 或项目级别配置
+// 这里不再单独配置 repositories
+
 dependencies {
-    // 添加本地AAR依赖
-    implementation(files("libs/basesdk_release_v2.15.8_202512301622.aar"))
-    implementation(files("libs/vtbrsdk_release_v2.15.8_202512301622.aar"))
-    implementation(files("libs/vtloginsdk_release_v2.15.8_202512301707.aar"))
-    implementation(files("libs/offlinefinger_release_v2.15.6_202205101903.aar"))
+    // 原本引用的本地依赖
+    // implementation files('libs/basesdk_release_v2.15.8_202512301622.aar')
+    // implementation files('libs/vtbrsdk_release_v2.15.8_202512301622.aar')
+    // implementation files('libs/offlinefinger_release_v2.15.6_202205101903.aar')
+    // implementation files('libs/vtloginsdk_release_v2.15.8_202512301707.aar')
+
+    // 使用本地Maven仓库中的AAR依赖（需要先运行 publishAarDepsToMavenLocal）
+    // 如果本地Maven中没有，则从libs目录加载（构建时会自动处理）
+    implementation("io.github.lvhao01:lv-yuedu-basesdk:1.0.1")
+    implementation("io.github.lvhao01:lv-yuedu-vtbrsdk:1.0.1")
+    implementation("io.github.lvhao01:lv-yuedu-vtloginsdk:1.0.1")
+    implementation("io.github.lvhao01:lv-yuedu-offlinefinger:1.0.1")
 
     // 网络库依赖（basesdk需要）
     implementation("com.squareup.okhttp3:okhttp:3.12.13")
@@ -67,45 +77,25 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-// 发布配置：将主 AAR 与 libs 下的 AAR 一起作为附件发布
+// 发布配置：为 yuedu 插件和 4 个 AAR 分别创建独立的 Maven publication
 // 说明：
 // - publishing：配置要生成的 Maven publication
 // - signing：对生成的 publication 进行 PGP 签名，Maven Central 必须签名
 afterEvaluate {
     publishing {
         publications {
+            // 主 publication：yuedu 插件本身
             create<MavenPublication>("release") {
-                // groupId/artifactId/version：Maven 坐标，需换成你自己的
                 groupId = "io.github.lvhao01"
                 artifactId = "lv-yuedu-plugin"
-                version = "1.0.0"
+                version = "1.0.1"
 
-                // from(components["release"])：把 Android library 的 release 变体产物作为主 artifact（主 AAR）
                 from(components["release"])
 
-                // 附加额外 AAR，使用 classifier 区分，外部拿到同一坐标下的多个附件
-                artifact("libs/basesdk_release_v2.15.8_202512301622.aar") {
-                    classifier = "basesdk"
-                    extension = "aar"
-                }
-                artifact("libs/vtbrsdk_release_v2.15.8_202512301622.aar") {
-                    classifier = "vtbrsdk"
-                    extension = "aar"
-                }
-                artifact("libs/vtloginsdk_release_v2.15.8_202512301707.aar") {
-                    classifier = "vtloginsdk"
-                    extension = "aar"
-                }
-                artifact("libs/offlinefinger_release_v2.15.6_202205101903.aar") {
-                    classifier = "offlinefinger"
-                    extension = "aar"
-                }
-
                 pom {
-                    // POM 元信息：中央仓库必需
-                    name.set("yuedu")
-                    description.set("Yuedu SDK")
-                    url.set("https://example.com/yuedu")
+                    name.set("Yuedu Plugin")
+                    description.set("Reading children's picture books SDK Plugin")
+                    url.set("https://github.com/lvhao01/qzh-yeudu")
                     licenses {
                         license {
                             name.set("The Apache License, Version 2.0")
@@ -114,15 +104,155 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id.set("dev")
-                            name.set("Dev")
-                            email.set("dev@example.com")
+                            id.set("lvhao01")
+                            name.set("lvhao01")
+                            email.set("1274714546@qq.com")
                         }
                     }
                     scm {
-                        url.set("https://example.com/yuedu.git")
-                        connection.set("scm:git:https://example.com/yuedu.git")
-                        developerConnection.set("scm:git:ssh://example.com/yuedu.git")
+                        url.set("https://github.com/lvhao01/qzh-yeudu.git")
+                        connection.set("scm:git:https://github.com/lvhao01/qzh-yeudu.git")
+                        developerConnection.set("scm:git:ssh://github.com/lvhao01/qzh-yeudu.git")
+                    }
+                }
+            }
+
+            // basesdk AAR 的独立 publication
+            create<MavenPublication>("basesdk") {
+                groupId = "io.github.lvhao01"
+                artifactId = "lv-yuedu-basesdk"
+                version = "1.0.1"
+
+                artifact("libs/basesdk_release_v2.15.8_202512301622.aar") {
+                    extension = "aar"
+                }
+
+                pom {
+                    name.set("Base SDK")
+                    description.set("Base SDK for Reading children's picture books SDK Plugin of lv-yuedu-plugin")
+                    url.set("https://github.com/lvhao01/qzh-yeudu")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("lvhao01")
+                            name.set("lvhao01")
+                            email.set("1274714546@qq.com")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/lvhao01/qzh-yeudu.git")
+                        connection.set("scm:git:https://github.com/lvhao01/qzh-yeudu.git")
+                        developerConnection.set("scm:git:ssh://github.com/lvhao01/qzh-yeudu.git")
+                    }
+                }
+            }
+
+            // vtbrsdk AAR 的独立 publication
+            create<MavenPublication>("vtbrsdk") {
+                groupId = "io.github.lvhao01"
+                artifactId = "lv-yuedu-vtbrsdk"
+                version = "1.0.1"
+
+                artifact("libs/vtbrsdk_release_v2.15.8_202512301622.aar") {
+                    extension = "aar"
+                }
+
+                pom {
+                    name.set("VTBR SDK")
+                    description.set("VTBR SDK for Reading children's picture books SDK Plugin of lv-yuedu-plugin")
+                    url.set("https://github.com/lvhao01/qzh-yeudu")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("lvhao01")
+                            name.set("lvhao01")
+                            email.set("1274714546@qq.com")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/lvhao01/qzh-yeudu.git")
+                        connection.set("scm:git:https://github.com/lvhao01/qzh-yeudu.git")
+                        developerConnection.set("scm:git:ssh://github.com/lvhao01/qzh-yeudu.git")
+                    }
+                }
+            }
+
+            // vtloginsdk AAR 的独立 publication
+            create<MavenPublication>("vtloginsdk") {
+                groupId = "io.github.lvhao01"
+                artifactId = "lv-yuedu-vtloginsdk"
+                version = "1.0.1"
+
+                artifact("libs/vtloginsdk_release_v2.15.8_202512301707.aar") {
+                    extension = "aar"
+                }
+
+                pom {
+                    name.set("VTLogin SDK")
+                    description.set("VTLogin SDK for Reading children's picture books SDK Plugin of lv-yuedu-plugin")
+                    url.set("https://github.com/lvhao01/qzh-yeudu")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("lvhao01")
+                            name.set("lvhao01")
+                            email.set("1274714546@qq.com")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/lvhao01/qzh-yeudu.git")
+                        connection.set("scm:git:https://github.com/lvhao01/qzh-yeudu.git")
+                        developerConnection.set("scm:git:ssh://github.com/lvhao01/qzh-yeudu.git")
+                    }
+                }
+            }
+
+            // offlinefinger AAR 的独立 publication
+            create<MavenPublication>("offlinefinger") {
+                groupId = "io.github.lvhao01"
+                artifactId = "lv-yuedu-offlinefinger"
+                version = "1.0.1"
+
+                artifact("libs/offlinefinger_release_v2.15.6_202205101903.aar") {
+                    extension = "aar"
+                }
+
+                pom {
+                    name.set("Offline Finger SDK")
+                    description.set("Offline SDK for Reading children's picture books SDK Plugin of lv-yuedu-plugin")
+                    url.set("https://github.com/lvhao01/qzh-yeudu")
+                    licenses {
+                        license {
+                            name.set("The Apache License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("lvhao01")
+                            name.set("lvhao01")
+                            email.set("1274714546@qq.com")
+                        }
+                    }
+                    scm {
+                        url.set("https://github.com/lvhao01/qzh-yeudu.git")
+                        connection.set("scm:git:https://github.com/lvhao01/qzh-yeudu.git")
+                        developerConnection.set("scm:git:ssh://github.com/lvhao01/qzh-yeudu.git")
                     }
                 }
             }
@@ -144,16 +274,37 @@ afterEvaluate {
             // }
         }
     }
-
+    
+    // 创建一个任务，先将4个AAR发布到本地Maven仓库
+    // 主插件构建时需要使用这些依赖
+    tasks.register("publishAarDepsToMavenLocal") {
+        group = "publishing"
+        description = "Publish 4 AAR dependencies to local Maven repository"
+        dependsOn(
+            "publishBasesdkPublicationToMavenLocal",
+            "publishVtbrsdkPublicationToMavenLocal",
+            "publishVtloginsdkPublicationToMavenLocal",
+            "publishOfflinefingerPublicationToMavenLocal"
+        )
+    }
+    
+    // 确保在构建主插件AAR之前，先发布4个AAR到本地Maven
+    tasks.named("bundleReleaseAar") {
+        mustRunAfter("publishAarDepsToMavenLocal")
+    }
+    
+    tasks.named("assembleRelease") {
+        dependsOn("publishAarDepsToMavenLocal")
+    }
+    
     signing {
-        // 使用本地 Gradle 属性中的 GPG 密钥进行签名；Maven Central 必须签名
-        val publication = publishing.publications["release"]
-        sign(publication)
-        // 如需内存密钥方式：
-        // useInMemoryPgpKeys(
-        //     findProperty("signing.keyId") as String?,
-        //     findProperty("signing.privateKey") as String?,
-        //     findProperty("signing.password") as String?
-        // )
+        // 使用本地 GPG 命令进行签名（无需在属性中保存私钥明文）
+        // 需要配置 signing.keyId 在 gradle.properties 中，私钥由系统 GPG 管理
+        useGpgCmd()
+        
+        // 对所有 publication 进行签名
+        publishing.publications.forEach { publication ->
+            sign(publication)
+        }
     }
 }
