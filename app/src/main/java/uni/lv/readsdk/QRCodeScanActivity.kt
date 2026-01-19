@@ -21,6 +21,7 @@ import com.google.zxing.ResultPoint
 class QRCodeScanActivity : AppCompatActivity() {
 
     private lateinit var barcodeView: DecoratedBarcodeView
+    private lateinit var tvOpenId: android.widget.TextView
     private var hasScanned = false // 防止重复扫描
 
     companion object {
@@ -40,6 +41,17 @@ class QRCodeScanActivity : AppCompatActivity() {
         setContentView(R.layout.activity_qrcode_scan)
 
         barcodeView = findViewById(R.id.barcode_scanner)
+        tvOpenId = findViewById(R.id.tv_openid)
+
+        // 初始化SDK并更新OpenID显示
+        if (!uni.lv.yuedu.YueDuSDKManager.isInitialized()) {
+            try {
+                uni.lv.yuedu.YueDuSDKManager.initialize(this)
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "SDK初始化失败", e)
+            }
+        }
+        updateOpenIdDisplay()
 
         // 检查相机权限
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) 
@@ -53,6 +65,20 @@ class QRCodeScanActivity : AppCompatActivity() {
         } else {
             // 已有权限，开始扫描
             startScan()
+        }
+    }
+    
+    /**
+     * 更新OpenID显示
+     */
+    private fun updateOpenIdDisplay() {
+        val openId = uni.lv.yuedu.YueDuSDKManager.getOpenID()
+        if (openId.isNotEmpty()) {
+            tvOpenId.text = "OpenID: $openId"
+            android.util.Log.d(TAG, "OpenID已更新: $openId")
+        } else {
+            tvOpenId.text = "OpenID: 未获取"
+            android.util.Log.d(TAG, "OpenID为空")
         }
     }
 

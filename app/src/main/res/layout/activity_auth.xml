@@ -14,7 +14,18 @@
         android:text="授权认证"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_openid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OpenID: 未获取"
+        android:textSize="14sp"
+        android:layout_marginBottom="24dp"
+        android:padding="8dp"
+        android:background="#F0F0F0"
+        android:gravity="center" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"

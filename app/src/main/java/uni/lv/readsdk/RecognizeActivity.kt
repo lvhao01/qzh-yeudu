@@ -54,6 +54,7 @@ class RecognizeActivity : AppCompatActivity() {
     private lateinit var btnReplayAudio: Button
     
     // 状态提示文本（使用方自己实现）
+    private lateinit var tvOpenId: TextView
     private lateinit var tvStatus: TextView
     private lateinit var tvRecognizeInfo: TextView
     private lateinit var tvDownloadStatus: TextView
@@ -112,6 +113,23 @@ class RecognizeActivity : AppCompatActivity() {
 
         // 检查并申请相机权限
         checkCameraPermission()
+        
+        // 更新OpenID显示
+        updateOpenIdDisplay()
+    }
+    
+    /**
+     * 更新OpenID显示
+     */
+    private fun updateOpenIdDisplay() {
+        val openId = YueDuSDKManager.getOpenID()
+        if (openId.isNotEmpty()) {
+            tvOpenId.text = "OpenID: $openId"
+            Log.d(TAG, "OpenID已更新: $openId")
+        } else {
+            tvOpenId.text = "OpenID: 未获取（需要先完成授权）"
+            Log.d(TAG, "OpenID为空，可能还未授权")
+        }
     }
 
     /**
@@ -128,6 +146,7 @@ class RecognizeActivity : AppCompatActivity() {
         btnResumeAudio = findViewById(R.id.btn_resume_audio)
         btnReplayAudio = findViewById(R.id.btn_replay_audio)
         
+        tvOpenId = findViewById(R.id.tv_openid)
         tvStatus = findViewById(R.id.tv_status)
         tvRecognizeInfo = findViewById(R.id.tv_recognize_info)
         tvDownloadStatus = findViewById(R.id.tv_download_status)
@@ -499,6 +518,7 @@ class RecognizeActivity : AppCompatActivity() {
                 if (it.description.isNotEmpty()) {
                     append("描述: ${it.description}\n")
                 }
+                append("是否支持指读: ${if (it.supportFingerRead) "是" else "否"}\n")
             }
         }
         

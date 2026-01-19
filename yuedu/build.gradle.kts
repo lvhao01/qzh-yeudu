@@ -45,17 +45,17 @@ android {
 
 dependencies {
     // 原本引用的本地依赖
-    // implementation files('libs/basesdk_release_v2.15.8_202512301622.aar')
-    // implementation files('libs/vtbrsdk_release_v2.15.8_202512301622.aar')
-    // implementation files('libs/offlinefinger_release_v2.15.6_202205101903.aar')
-    // implementation files('libs/vtloginsdk_release_v2.15.8_202512301707.aar')
+    implementation(files("libs/basesdk_release_v2.15.8_202601162233.aar"))
+    implementation(files("libs/vtbrsdk_release_v2.15.8_202601162234.aar"))
+    implementation(files("libs/offlinefinger_release_v2.15.6_202205101903.aar"))
+    implementation(files("libs/vtloginsdk_release_v2.15.8_202601162234.aar"))
 
     // 使用本地Maven仓库中的AAR依赖（需要先运行 publishAarDepsToMavenLocal）
     // 如果本地Maven中没有，则从libs目录加载（构建时会自动处理）
-    implementation("io.github.lvhao01:lv-yuedu-basesdk:1.0.1")
-    implementation("io.github.lvhao01:lv-yuedu-vtbrsdk:1.0.1")
-    implementation("io.github.lvhao01:lv-yuedu-vtloginsdk:1.0.1")
-    implementation("io.github.lvhao01:lv-yuedu-offlinefinger:1.0.1")
+//     implementation("io.github.lvhao01:lv-yuedu-basesdk:1.0.2")
+//     implementation("io.github.lvhao01:lv-yuedu-vtbrsdk:1.0.2")
+//     implementation("io.github.lvhao01:lv-yuedu-vtloginsdk:1.0.2")
+//     implementation("io.github.lvhao01:lv-yuedu-offlinefinger:1.0.1")
 
     // 网络库依赖（basesdk需要）
     implementation("com.squareup.okhttp3:okhttp:3.12.13")
@@ -67,7 +67,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.8.9")
 
     // ExoPlayer依赖（vtbrsdk需要，用于音频播放）
-    implementation("com.google.android.exoplayer:exoplayer-core:2.13.3")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.18.5")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -88,7 +88,7 @@ afterEvaluate {
             create<MavenPublication>("release") {
                 groupId = "io.github.lvhao01"
                 artifactId = "lv-yuedu-plugin"
-                version = "1.0.1"
+                version = "1.0.2"
 
                 from(components["release"])
 
@@ -121,9 +121,9 @@ afterEvaluate {
             create<MavenPublication>("basesdk") {
                 groupId = "io.github.lvhao01"
                 artifactId = "lv-yuedu-basesdk"
-                version = "1.0.1"
+                version = "1.0.2"
 
-                artifact("libs/basesdk_release_v2.15.8_202512301622.aar") {
+                artifact("libs/basesdk_release_v2.15.8_202601162233.aar") {
                     extension = "aar"
                 }
 
@@ -156,9 +156,9 @@ afterEvaluate {
             create<MavenPublication>("vtbrsdk") {
                 groupId = "io.github.lvhao01"
                 artifactId = "lv-yuedu-vtbrsdk"
-                version = "1.0.1"
+                version = "1.0.2"
 
-                artifact("libs/vtbrsdk_release_v2.15.8_202512301622.aar") {
+                artifact("libs/vtbrsdk_release_v2.15.8_202601162234.aar") {
                     extension = "aar"
                 }
 
@@ -191,9 +191,9 @@ afterEvaluate {
             create<MavenPublication>("vtloginsdk") {
                 groupId = "io.github.lvhao01"
                 artifactId = "lv-yuedu-vtloginsdk"
-                version = "1.0.1"
+                version = "1.0.2"
 
-                artifact("libs/vtloginsdk_release_v2.15.8_202512301707.aar") {
+                artifact("libs/vtloginsdk_release_v2.15.8_202601162234.aar") {
                     extension = "aar"
                 }
 
@@ -294,6 +294,29 @@ afterEvaluate {
     }
     
     tasks.named("assembleRelease") {
+        dependsOn("publishAarDepsToMavenLocal")
+    }
+    
+    // 创建一个任务，发布所有插件到本地 staging 仓库
+    tasks.register("publishAllToLocalStaging") {
+        group = "publishing"
+        description = "Publish all publications (plugin + 4 AARs) to local staging repository"
+        
+        // 先发布 AAR 依赖到 mavenLocal（release publication 编译时需要）
+        dependsOn("publishAarDepsToMavenLocal")
+        
+        // 然后发布所有 publication 到 localStaging 仓库
+        dependsOn(
+            "publishReleasePublicationToLocalStagingRepository",
+            "publishBasesdkPublicationToLocalStagingRepository",
+            "publishVtbrsdkPublicationToLocalStagingRepository",
+            "publishVtloginsdkPublicationToLocalStagingRepository",
+            "publishOfflinefingerPublicationToLocalStagingRepository"
+        )
+    }
+    
+    // 确保 release publication 发布前先有 AAR 依赖
+    tasks.named("publishReleasePublicationToLocalStagingRepository") {
         dependsOn("publishAarDepsToMavenLocal")
     }
     

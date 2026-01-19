@@ -14,7 +14,17 @@
         android:layout_height="wrap_content"
         android:text="授权状态: 未授权"
         android:textSize="18sp"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tv_openid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OpenID: 未获取"
+        android:textSize="14sp"
+        android:layout_marginBottom="32dp"
+        android:padding="8dp"
+        android:background="#F0F0F0" />
 
     <Button
         android:id="@+id/btn_scan_qrcode"

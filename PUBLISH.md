@@ -69,9 +69,7 @@ readsdk/yuedu/build/maven-local/
 
 ### 第三步：登录 Sonatype Nexus
 
-1. 访问：https://s01.oss.sonatype.org/
-2. 使用 Sonatype OSSRH 账号登录
-3. 点击左侧菜单：**Staging Repositories**
+访问：https://central.sonatype.com/publishing/deployments
 
 ### 第四步：上传文件到 Staging Repository
 

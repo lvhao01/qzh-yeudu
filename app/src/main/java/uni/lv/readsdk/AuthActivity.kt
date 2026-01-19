@@ -19,6 +19,7 @@ class AuthActivity : AppCompatActivity() {
     private lateinit var etQrCode: TextInputEditText
     private lateinit var btnAuthorize: Button
     private lateinit var progressBar: ProgressBar
+    private lateinit var tvOpenId: android.widget.TextView
 
     companion object {
         const val EXTRA_LICENSE = "extra_license"
@@ -41,6 +42,7 @@ class AuthActivity : AppCompatActivity() {
         etQrCode = findViewById(R.id.et_qr_code)
         btnAuthorize = findViewById(R.id.btn_authorize)
         progressBar = findViewById(R.id.progress_bar)
+        tvOpenId = findViewById(R.id.tv_openid)
     }
 
     private fun setupViews() {
@@ -49,6 +51,9 @@ class AuthActivity : AppCompatActivity() {
             YueDuSDKManager.initialize(this)
         }
 
+        // 更新OpenID显示
+        updateOpenIdDisplay()
+        
         // 检查是否从Intent中接收到二维码内容
         val qrCodeContent = intent.getStringExtra("qr_code_content")
         if (!qrCodeContent.isNullOrEmpty()) {
@@ -61,6 +66,18 @@ class AuthActivity : AppCompatActivity() {
         // 授权按钮点击事件
         btnAuthorize.setOnClickListener {
             performAuth()
+        }
+    }
+    
+    /**
+     * 更新OpenID显示
+     */
+    private fun updateOpenIdDisplay() {
+        val openId = YueDuSDKManager.getOpenID()
+        if (openId.isNotEmpty()) {
+            tvOpenId.text = "OpenID: $openId"
+        } else {
+            tvOpenId.text = "OpenID: 未获取（需要先完成授权）"
         }
     }
 
@@ -91,12 +108,20 @@ class AuthActivity : AppCompatActivity() {
                 runOnUiThread {
                     progressBar.visibility = View.GONE
                     btnAuthorize.isEnabled = true
+                    
+                    // 更新OpenID显示（授权成功后OpenID应该可以获取到了）
+                    updateOpenIdDisplay()
+                    
                     // 通过Intent传递结果给外层
                     val resultIntent = Intent().apply {
                         putExtra(EXTRA_LICENSE, license)
                     }
                     setResult(RESULT_AUTH_SUCCESS, resultIntent)
-                    finish()
+                    
+                    // 延迟一点再finish，让用户能看到OpenID更新
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        finish()
+                    }, 500)
                 }
             }
 

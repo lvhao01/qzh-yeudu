@@ -22,6 +22,17 @@
         android:layout_marginBottom="16dp" />
 
     <TextView
+        android:id="@+id/tv_openid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OpenID: 未获取"
+        android:textSize="14sp"
+        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        android:background="#F0F0F0"
+        android:gravity="center" />
+
+    <TextView
         android:id="@+id/tv_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

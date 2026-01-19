@@ -45,7 +45,13 @@ data class BookInfo(
     /**
      * 缩略图封面图片URL
      */
-    val thumbnailCoverImage: String
+    val thumbnailCoverImage: String,
+
+    /**
+     * 是否支持手指点读（指读）
+     * true 表示当前书籍支持指读功能
+     */
+    val supportFingerRead: Boolean
 ) : Serializable
 
 

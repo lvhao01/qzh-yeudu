@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnStartRecognize: Button
     private lateinit var btnClearAuth: Button
     private lateinit var tvStatus: TextView
+    private lateinit var tvOpenId: TextView
     
     // 保存授权凭证，用于识别功能
     private var savedLicense: String? = null
@@ -94,6 +95,10 @@ class MainActivity : AppCompatActivity() {
                 updateUIForAuthenticated()
                 
                 tvStatus.text = "授权状态: 已授权"
+                
+                // 更新OpenID显示
+                updateOpenIdDisplay()
+                
                 Toast.makeText(this, "授权成功，可以开始识别了", Toast.LENGTH_SHORT).show()
             }
             AuthActivity.RESULT_AUTH_FAIL -> {
@@ -192,6 +197,9 @@ class MainActivity : AppCompatActivity() {
         checkAndLoadAuthStatus()
         
         setupViews()
+        
+        // 初始化SDK并获取OpenID
+        updateOpenIdDisplay()
     }
     
     /**
@@ -245,6 +253,7 @@ class MainActivity : AppCompatActivity() {
         btnStartRecognize = findViewById(R.id.btn_start_recognize)
         btnClearAuth = findViewById(R.id.btn_clear_auth)
         tvStatus = findViewById(R.id.tv_status)
+        tvOpenId = findViewById(R.id.tv_openid)
     }
     
     /**
@@ -333,8 +342,39 @@ class MainActivity : AppCompatActivity() {
             updateUIForUnauthenticated()
             
             tvStatus.text = "授权状态: 已清除，请重新认证"
+            
+            // 更新OpenID显示
+            updateOpenIdDisplay()
+            
             Toast.makeText(this, "认证状态已清除", Toast.LENGTH_SHORT).show()
             android.util.Log.d("MainActivity", "用户手动清除认证状态")
+        }
+    }
+    
+    /**
+     * 更新OpenID显示
+     * 尝试从SDK获取OpenID并显示在界面上
+     */
+    private fun updateOpenIdDisplay() {
+        // 确保SDK已初始化
+        if (!YueDuSDKManager.isInitialized()) {
+            try {
+                YueDuSDKManager.initialize(this)
+            } catch (e: Exception) {
+                android.util.Log.e(TAG, "SDK初始化失败，无法获取OpenID", e)
+                tvOpenId.text = "OpenID: SDK未初始化"
+                return
+            }
+        }
+        
+        // 获取OpenID
+        val openId = YueDuSDKManager.getOpenID()
+        if (openId.isNotEmpty()) {
+            tvOpenId.text = "OpenID: $openId"
+            Log.d(TAG, "OpenID已更新: $openId")
+        } else {
+            tvOpenId.text = "OpenID: 未获取（需要先完成授权）"
+            Log.d(TAG, "OpenID为空，可能还未授权")
         }
     }
 }

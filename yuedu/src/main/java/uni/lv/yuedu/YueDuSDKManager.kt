@@ -13,6 +13,7 @@ import uni.lv.yuedu.model.RecognizeResult
 import com.visiontalk.basesdk.VTBaseSDKManagerExt
 import com.visiontalk.basesdk.api.mode.VTBRBookDataModel
 import com.visiontalk.vtbrsdk.VTBRSDKManager
+import com.visiontalk.vtbrsdk.VTBRConfigure
 import com.visiontalk.vtbrsdk.listener.IRecognizeListener
 import com.visiontalk.vtbrsdk.listener.IDownloadListener
 import com.visiontalk.vtbrsdk.listener.IAudioStateListener
@@ -195,6 +196,18 @@ object YueDuSDKManager {
                     override fun onRecognizeSuccess(data: VTBRBookDataModel): Boolean {
                         Log.i(TAG, "识别成功: bookId=${data.bookId}, pageId=${data.pageId}")
                         
+                        // 计算当前书籍是否支持指读（参考 example 项目的实现逻辑）
+                        val supportFingerRead = try {
+                            val isFingerDdEnable = VTBRConfigure.isFingerDdEnable()
+                            // 1：领读; 2：点读; 3：都有
+                            val resourceType = data.bookInfo?.resourceType ?: 0
+                            val hasBookRes = vtbrSDKManager?.checkBookResExists(data.bookId) ?: false
+                            isFingerDdEnable && hasBookRes && resourceType > 1
+                        } catch (e: Exception) {
+                            Log.w(TAG, "检测书本是否支持指读时发生异常", e)
+                            false
+                        }
+
                         // 将SDK的数据模型转换为我们的数据模型
                         val bookInfo = data.bookInfo?.let { bookInfoEntity ->
                             BookInfo(
@@ -205,7 +218,8 @@ object YueDuSDKManager {
                                 author = bookInfoEntity.author ?: "",
                                 description = bookInfoEntity.description ?: "",
                                 coverImage = "",  // BookInfoEntity可能没有coverImage字段
-                                thumbnailCoverImage = bookInfoEntity.thumbnailCoverImage ?: ""
+                                thumbnailCoverImage = bookInfoEntity.thumbnailCoverImage ?: "",
+                                supportFingerRead = supportFingerRead
                             )
                         }
                         
@@ -591,6 +605,47 @@ object YueDuSDKManager {
             }
         } ?: run {
             Log.w(TAG, "识别SDK管理器未初始化，无法播放页面音频")
+        }
+    }
+
+    /**
+     * 获取OpenID
+     * 授权成功后，可以通过此方法获取OpenID
+     * 参考 example 项目中的实现方式：mVTBRSDKManager.getOpenID()
+     * @return OpenID字符串，如果SDK未初始化或授权未成功，返回空字符串
+     */
+    fun getOpenID(): String {
+        return try {
+            if (!isInitialized) {
+                Log.w(TAG, "SDK未初始化，无法获取OpenID")
+                return ""
+            }
+            
+            // 通过VTBRSDKManager获取OpenID（与example项目保持一致）
+            // 注意：只有在识别SDK初始化成功后，才能获取OpenID
+            val openId = if (vtbrSDKManager != null && isRecognizeSDKInitialized) {
+                try {
+                    vtbrSDKManager?.getOpenID() ?: ""
+                } catch (e: Exception) {
+                    Log.e(TAG, "通过VTBRSDKManager获取OpenID失败", e)
+                    ""
+                }
+            } else {
+                // 如果识别SDK还未初始化，返回空字符串
+                Log.d(TAG, "识别SDK未初始化，无法获取OpenID")
+                ""
+            }
+            
+            if (openId.isNotEmpty()) {
+                Log.d(TAG, "获取OpenID成功: $openId")
+            } else {
+                Log.d(TAG, "获取OpenID为空，可能还未授权或识别SDK未初始化")
+            }
+            
+            openId
+        } catch (e: Exception) {
+            Log.e(TAG, "获取OpenID异常", e)
+            ""
         }
     }
 
